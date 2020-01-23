@@ -46,7 +46,7 @@ Right-click on the newly installed Nexus appliance and select **Configure templa
 
 We are ready to build the following topology:
 
-![LAB01_Topology](LAB01/images/LAB01_Topology.png)
+![LAB01_Topology](images/LAB01_Topology.png)
 
 Let's create a new GNS3 project. Go to **File>New blank project** and name this project as **TrainingNexus_LAB01_Simple-vPC**, or choose the name you prefer. Press **Ok**.
 
