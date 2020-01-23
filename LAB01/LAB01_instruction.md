@@ -9,7 +9,7 @@
 
 Virtual Port Channel (vPC) is a feature that enables the extension of a port channel across two different physical switches. The main advantage of this feature is the possibility to configure dual-homing for downstream devices to two upstream switches, without the need for a loop control mechanism such Spanning Tree Protocol.
 
-In this first virtual lab we will learn how to configure vPC in its simplest form (single-sided vPC) and to check all the status related parameters.
+In this first virtual lab of the tutorial we will learn how to configure vPC in its simplest form (single-sided vPC) and to check all the status related parameters.
 
 ## Prerequisites
 
@@ -36,11 +36,11 @@ Open GNS3 and go to **File>Import appliance**. Choose the path of the downloaded
 Select **Install the appliance on your local computer** and press **Next** twice.
 If you downloaded NX-OSv software (_titanium-final.7.3.0.D1.1.qcow2_) in the **~/Downloads/** folder, you should read **Ready to install** in the status column next to **NX-OSv version 7.3.0**. If so, select it and press **Next**, then **Ok**; otherwise press the **Import** button and select downloaded software before moving forward. Click **Finish** to complete this step.
 
-### Appliance setup
+### Nexus template setup
 
 Press the **Browse switches** button. It is the icon with the parallel arrows on the left side vertical bar.
 
-Right-click on the newly installed Nexus appliance and select **Configure template**. Under the **Network** tab fill the _Adapters_ form with the value "16" and press the **Ok* button.
+Right-click on the newly installed Nexus appliance and select **Configure template**. Under the **Network** tab fill the _Adapters_ form with the value "16" and press the **Ok** button.
 
 ### GNS3 project setup
 
@@ -50,8 +50,19 @@ We are ready to build the following topology:
 
 Let's create a new GNS3 project. Go to **File>New blank project** and name this project as **TrainingNexus_LAB01_Simple-vPC**, or choose the name you prefer. Press **Ok**.
 
-Now press the **Browse switches** button and drag-and-drop 3 times the Nexus template on the workspace.
+Now press the **Browse switches** button and drag-and-drop 3 times the Nexus template on the workspace. Rename the devices just linke the previous image: it will be easier to follow next steps. Choose two devices to be Nexus 7K of the virtual infrastructure, and name them as **N7K-1** and **N7K-2**. The third switch will act as if it was a Nexus 5K, albeit it is simulated with a Nexus 7K image: name it **N5K-1**.
 
+Before starting the devices we need to create the links between them. As you can see from the topology, there are 3 links between **N7K-1** and **N7K-2** and 2 links, one for each N7K-1, between **N5K-1** and the other switches. Creating a link is straightforward: push the **Add a link** button, it is the last icon on the left side vertical bar, and then click on the two devices you want to connect. Once you click on a device you have to chose the port you want to use. Please follow the connectivity scheme provided below.
+
+|Device 1|Port 1          |Port 2          |Device 2 |Link Role               |
+| :--:   |:--:            |:--:            |:--:     |:--                     |
+|N7K-1   |Ethernet1/7     |Ethernet1/7     |N7K-2    |vPC Peer Keepalive Link |
+|N7K-1   |Ethernet1/8     |Ethernet1/8     |N7K-2    |vPC Peer Link           |
+|N7K-1   |Ethernet1/9     |Ethernet1/9     |N7K-2    |vPC Peer Link           |
+|N5K-1   |Ethernet1/1     |Ethernet1/1     |N7K-1    |Uplink                  |
+|N5K-1   |Ethernet1/2     |Ethernet1/1     |N7K-2    |Uplink                  |
+
+Please don't consider the last column of the tale, the meaning of that roles will be explained later on this tutorial.
 
 
 
