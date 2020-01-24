@@ -19,7 +19,7 @@ Virtual Port Channel (vPC) is a feature that enables the extension of a port cha
 
 In this first virtual lab of the tutorial we will learn how to configure vPC in its simplest form (single-sided vPC) and to check all the status related parameters.
 
-If you are attending a live training session, you can skip the [Preparation Activities](#Preparation-Activities) section and go directly to the [Let's Get Started!](#Let's-Get-Started!) section.
+If you are attending a live training session, you can skip the [Preparation Activities](#Preparation-Activities) section and go directly to [this section](#Virtual-Port-Channel-Configuration-(N7K-Side)).
 
 ---
 
@@ -670,4 +670,100 @@ vPC Keep-alive parameters
 >- [x] vPC Peer Link
 >- [x] vPC creation
 > ---
+
+## Virtual Port Channel Configuration (N5K Side)
+
+Honestly, the title of this section is absolutely misleading.
+
+There is not any "_vPC configuration_" on the N5K side, because in this lab we are configuring a single-sided vPC, and this means that only on the N7K switches side there are some "special" settings, while on the N5K side the vPC is equal to an old-fashioned port-channel.
+
+Nevertheless, the architectural scenario of all these three switches is a vPC, even if on one side the vPC configuration collapses on the port-channel configuration.
+
+To complete this short section you have to aggregate the two interfaces **Ethernet1/1** and **Ethernet1/2** on the **N5K-1** in a port-channel.
+
+This activity has only 2 steps:
+
+- Enable LACP feature
+- Create port-channel
+
+We already did both of these steps during the vPC configuration on N7K side, no further details are needed.
+
+Before configuring this port-channel, notice that in  [this output](#show-vpc-brief) the vPC status is **_down\*_**: that's because that interface does not see any LACP BPDU coming from the link.
+
+Use the followings to configure the port-channel on **N5K-1**:
+
+```
+configure terminal 
+feature lacp
+interface Ethernet 1/1-2
+switchport 
+channel-group 10 mode active
+no shutdown 
+interface port-channel 10
+description *** vPC 10 ***
+switchport mode trunk 
+```
+<details>
+<summary>CLI view</summary>
+<pre>
+N5K-1# configure terminal 
+Enter configuration commands, one per line. End with CNTL/Z.
+N5K-1(config)# feature lacp
+N5K-1(config)# interface Ethernet 1/1-2
+N5K-1(config-if-range)# switchport 
+N5K-1(config-if-range)# channel-group 10 mode active
+N5K-1(config-if-range)# no shutdown 
+N5K-1(config-if-range)# interface port-channel 10
+N5K-1(config-if)# description *** vPC 10 ***
+N5K-1(config-if)# switchport mode trunk
+N5K-1(config-if)#
+</pre>
+</details>
+
+Run again the command _show vpc brief_ on the **N7K-1** or on the **N7K-2**: now you should be able to see the vPC status as **_up_** :
+
+```
+show vpc brief
+```
+
+<details>
+<summary>CLI view</summary>
+<pre>
+N7K-1# show vpc brief
+Legend:
+                (*) - local vPC is down, forwarding via vPC peer-link
+
+vPC domain id                     : 100 
+Peer status                       : peer adjacency formed ok      
+vPC keep-alive status             : peer is alive                 
+Configuration consistency status  : success 
+Per-vlan consistency status       : success                       
+Type-2 consistency status         : success 
+vPC role                          : primary                       
+Number of vPCs configured         : 1   
+Peer Gateway                      : Disabled
+Dual-active excluded VLANs        : -
+Graceful Consistency Check        : Enabled
+Auto-recovery status              : Disabled
+Delay-restore status              : Timer is off.(timeout = 30s)
+Delay-restore SVI status          : Timer is off.(timeout = 10s)
+Operational Layer3 Peer-router    : Disabled
+
+vPC Peer-link status
+\---------------------------------------------------------------------
+id    Port   Status Active vlans    
+\--    ----   ------ -------------------------------------------------
+1     Po1    up     1                                                           
+         
+
+vPC status
+\----------------------------------------------------------------------------
+Id    Port          Status Consistency Reason                Active vlans
+\--    ------------  ------ ----------- ------                ---------------
+10    Po10          up     success     success               1            
+</pre>
+</details>
+
+:+1: Congratulations! You just completed this LAB!
+---
 
