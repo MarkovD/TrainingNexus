@@ -8,8 +8,14 @@
     * [Nexus template setup](#Nexus-template-setup)
     * [GNS3 project setup](#GNS3-project-setup)
     * [Devices setup](#Devices-setup)
-- [Let's Get Started!](#Let's-Get-Started!)
-
+- [Virtual Port Channel Configuration (N7K Side)](#Virtual-Port-Channel-Configuration-(N7K-Side))
+    * [Enable features](#Enable-features)
+    * [vPC Peer Keepalive Link preconfig](#vPC-Peer-Keepalive-Link-preconfig)
+    * [vPC Domain](#vPC-Domain)
+    * [vPC Peer Link](#vPC-Peer-Link)
+    * [vPC creation](#vPC-creation)
+- [Virtual Port Channel Configuration (N5K Side)](#Virtual-Port-Channel-Configuration-(N5K-Side))
+- [Conclusions](#Conclusions)
 
 ---
 
@@ -764,6 +770,9 @@ Id    Port          Status Consistency Reason                Active vlans
 </pre>
 </details>
 
+## Conclusions
+
 :+1: Congratulations! You just completed this LAB!
 ---
 
+In this LAB we...
