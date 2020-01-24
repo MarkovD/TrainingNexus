@@ -17,7 +17,6 @@
 - [Virtual Port Channel Configuration (N5K Side)](#Virtual-Port-Channel-Configuration-(N5K-Side))
 - [Conclusions](#Conclusions)
 
----
 
 ## Introduction
 
@@ -48,7 +47,7 @@ The following steps show how to setup GNS3 LAB from scratch if you are using GNS
 
 Currently I'm using GNS3 version 2.2.5.
 
-> :warning: If you are using GNS3 VM some steps can be slightly different. 
+> :warning: If you are using GNS3 VM some step can be slightly different. 
 
 ### **GNS3 initial setup**
 
@@ -239,6 +238,7 @@ N7K-1(config-if)# no shutdown
 </details>
 
 Syntax description:
+
 |Command                                     |Purpose                                                        |
 | :--                                        |:--                                                            |
 |interface Ethernet 1/7                      |Enters interface Ethernet1/7 configuration mode.               |
@@ -399,6 +399,7 @@ N7K-1(config-if)# no shutdown
 </details>
 
 Syntax description:
+
 |Command                                    |Purpose                                                        |
 |:--                                        |:--                                                            |
 |interface Ethernet 1/8-9                   |Specifies the interface that you are configuring.              |
