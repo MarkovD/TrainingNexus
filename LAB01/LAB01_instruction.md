@@ -29,10 +29,10 @@ If you are attending a live training session, you can skip the [Preparation Acti
 - Windows, MacOS or Linux
 - [Download and install GNS3](https://www.gns3.com/)
 - [Download NX-OSv GNS3 appliance](https://www.gns3.com/marketplace/appliance/cisco-nx-osv)
-- Download appliance required software: NX-OSv version 7.3.0[^1]
+- Download appliance required software: NX-OSv version 7.3.0 \[1]
 
 
-[^1]: A valid Cisco account is required.
+[1]: A valid Cisco account is required.
 
 ---
 
@@ -125,6 +125,9 @@ wr
 ## Let's Get Started!
 
 We need to perform 5 steps to configure a vPC:
+
+- [x] aaaa
+- [ ] bbb
 
 
 
