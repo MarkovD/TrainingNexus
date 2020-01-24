@@ -29,9 +29,10 @@ If you are attending a live training session, you can skip the [Preparation Acti
 - Windows, MacOS or Linux
 - [Download and install GNS3](https://www.gns3.com/)
 - [Download NX-OSv GNS3 appliance](https://www.gns3.com/marketplace/appliance/cisco-nx-osv)
-- Download appliance required software: NX-OSv version 7.3.0 \[*]
+- Download appliance required software: NX-OSv version 7.3.0[^1]
 
-\[*] A valid Cisco account is required
+
+[^1]: A valid Cisco account is required.
 
 ---
 
@@ -41,7 +42,7 @@ The following steps show how to setup GNS3 LAB from scratch if you are using GNS
 
 Currently I'm using GNS3 version 2.2.5.
 
-> :warning: If you are using GNS3 VM some step can be slightly different. 
+> :warning: If you are using GNS3 VM some steps can be slightly different. 
 
 ### **GNS3 initial setup**
 
@@ -54,7 +55,7 @@ If you downloaded NX-OSv software (_titanium-final.7.3.0.D1.1.qcow2_) in the **~
 
 Press the **Browse switches** button. It is the icon with the parallel arrows on the left side vertical bar.
 
-Right-click on the newly installed Nexus appliance and select **Configure template**. Under the **Network** tab fill the _Adapters_ form with the value "16" and press the **Ok** button.
+Right-click on the newly installed Nexus appliance and select **Configure template**. Under the **Network** tab, fill the _Adapters_ form with the value "16" and press the **Ok** button.
 
 ### **GNS3 project setup**
 
@@ -123,6 +124,10 @@ wr
 
 ## Let's Get Started!
 
+We need to perform 5 steps to configure a vPC:
+
+
+
 ### Enabling features 
 
 The first thing to do when working with Nexus switches is to activate the required features. For this lab we need to enable two features: **LACP** and **VPC**.
@@ -153,7 +158,7 @@ show feature | include vpc
 ```
 
 <details>
-    <summary>Sample Output</summary>
+    <summary>Command Output</summary>
     <pre>
 vpc                    1          enabled 
 </pre>
@@ -164,7 +169,7 @@ show feature | include lacp
 ```
 
 <details>
-    <summary>Sample Output</summary>
+    <summary>Command Output</summary>
     <pre>
 lacp                    1          enabled 
 </pre>
@@ -177,22 +182,24 @@ N7K-1# show feature | include bgp
 bgp                    1          disabled
 ```
 
-### Create vPC domain and configure vPC Peer Keepalive Link
+### vPC Peer Keepalive Link
 
-vPC peer keepalive link can be in any VRF, including _default_ or _mgmt_. Let's create a different VRF dedicated to the peer keepalive link. On both **N7K-1** and **N7K-2** use the command
+vPC peer keepalive link can be in any VRF, including _default_ or _mgmt_. Nevertheless, we are going to create a dedicated VRF for the peer keepalive link. On both **N7K-1** and **N7K-2** use the command
 
 ```
 vrf context keepalive-link
 ```
-to create the VRF named _keepalive-link_.
+to create the VRF named "_keepalive-link_".
 
-With respect to the connectivity scheme in the [GNS3 project setup](#GNS3-project-setup) section, the port **Ethernet1/7** on **N7K-1** and **N7K-2** is used to form the vPC peer keepalive link. To configure this interface on **N7K-1** use the following commands:
+Referring to the connectivity scheme in the [GNS3 project setup](#GNS3-project-setup) section, the port **Ethernet1/7** on **N7K-1** and **N7K-2** is used to form the vPC peer keepalive link.
+
+#### N7K-1 Configuration
 
 ```
 interface Ethernet 1/7
 description *** vPC Peer Keepalive Link ***
 no switchport 
-member keepalive-link 
+vrf member keepalive-link 
 ip address 10.0.100.1/30
 no shutdown
 ```
@@ -210,10 +217,109 @@ N7K-1(config-if)# no shutdown
 </pre>
 </details>
 
-|Command|Meaning          |
-| :--:   |:--:            |
-|N7K-1   |Ethernet1/7     |
-|N7K-1   |Ethernet1/8     |
-|N7K-1   |Ethernet1/9     |
-|N5K-1   |Ethernet1/1     |
-|N5K-1   |Ethernet1/2     |
+Syntax description:
+|Command                                    |Purpose                                                        |
+| :--                                       |:--                                                            |
+|interface Ethernet 1/7                     |Enters interface Ethernet1/7 configuration mode.               |
+|description *** vPC Peer Keepalive Link ***|Sets interface description.                                    |
+|no switchport                              |Configures the interface as a Layer3 interface.                |
+|vrf member keepalive-link                  |Adds this interface to the "keepalive-link" VRF.               |
+|ip address 10.0.100.1/30                   |Configures the IP address 10.0.100.1/30 for this interface.    |
+|no shutdown                                |Turns on this interface.                                       |
+
+#### N7K-2 Configuration & Link Verification
+
+```
+interface Ethernet 1/7
+description *** vPC Peer Keepalive Link ***
+no switchport 
+vrf member keepalive-link 
+ip address 10.0.100.2/30
+no shutdown
+```
+
+<details>
+    <summary>CLI view</summary>
+    <pre>
+N7K-2(config)# interface Ethernet 1/7
+N7K-2(config-if)# description *** vPC Peer Keepalive Link ***
+N7K-2(config-if)# no switchport 
+N7K-2(config-if)# vrf member keepalive-link 
+Warning: Deleted all L3 config on interface Ethernet1/7
+N7K-2(config-if)# ip address 10.0.100.2/30
+N7K-2(config-if)# no shutdown
+</pre>
+</details>
+
+As you can see from the commands above, the configuration is almost the same as the the one for the **N7K-1** switch. The only difference is the IP address assigned to the interface Ethernet1/7.
+You can choose the IP subnet you prefer for the L3 connectivity on the peer keepalive link: just make sure to assign two different IP addresses in the same subnet to the link ends.
+
+Let's check L3 connectivity on the peer keepalive link. On **N7K-2** use the command:
+
+```
+ping 10.0.100.1 vrf keepalive-link
+```
+
+<details>
+    <summary>Command Output</summary>
+    <pre>
+PING 10.0.100.1 (10.0.100.1): 56 data bytes
+64 bytes from 10.0.100.1: icmp_seq=0 ttl=254 time=21.111 ms
+64 bytes from 10.0.100.1: icmp_seq=1 ttl=254 time=3.015 ms
+64 bytes from 10.0.100.1: icmp_seq=2 ttl=254 time=4.98 ms
+64 bytes from 10.0.100.1: icmp_seq=3 ttl=254 time=5.842 ms
+64 bytes from 10.0.100.1: icmp_seq=4 ttl=254 time=3.371 ms
+^C
+--- 10.0.100.1 ping statistics ---
+5 packets transmitted, 5 packets received, 0.00% packet loss
+round-trip min/avg/max = 3.015/7.663/21.111 ms
+</pre>
+</details>
+
+>
+>If your output is similar to the one above you are fine, otherwise look for typos in the configurations with some _show_ command, e.g.>
+>
+>```
+>show run interface Ethernet1/7
+>```
+>or verify the interface operational status
+>```
+>show ip interface brief vrf keepalive-link
+>```
+>
+
+Now, let's create the vPC Domain _100_ on both **N7K-1** and **N7K-2**:
+
+#### N7K-1 Configuration
+
+```
+vpc domain 100
+peer-keepalive destination 10.0.100.2 source 10.0.100.1 vrf keepalive-link
+```
+<details>
+<summary>CLI view</summary>
+<pre>
+N7K-1(config)# vpc domain 100
+2020 Jan 23 15:19:53 N7K-1 %$ VDC-1 %$ %STP-2-VPC_PEERSWITCH_CONFIG_DISABLED: vPC peer-switch configuration is disabled. Please make sure to change spanning tree "bridge" priority as per the recommended guidelines.
+
+N7K-1(config-vpc-domain)# peer-keepalive destination 10.0.100.2 source 10.0.100.1 vrf keepalive-link 
+N7K-1(config-vpc-domain)#
+</pre>
+</details>
+
+#### N7K-2 Configuration
+
+```
+vpc domain 100
+peer-keepalive destination 10.0.100.1 source 10.0.100.2 vrf keepalive-link
+```
+<details>
+<summary>CLI view</summary>
+<pre>
+N7K-2(config)# vpc domain 100
+2020 Jan 24 09:01:27 N7K-2 %$ VDC-1 %$ %STP-2-VPC_PEERSWITCH_CONFIG_DISABLED: vPC peer-switch configuration is disabled. Please make sure to change spanning tree "bridge" priority as per the recommended guidelines.
+N7K-2(config-vpc-domain)# peer-keepalive destination 10.0.100.1 source 10.0.100.2 vrf keepalive-link
+N7K-2(config-vpc-domain)#
+</pre>
+</details>
+
