@@ -30,7 +30,7 @@ If you are attending a live training session, you can skip the [Preparation Acti
 
 ## Prerequisites
 
-- Minimum RAM: 16+ GB
+- Minimum RAM: 32+ GB
 - Windows, MacOS or Linux
 - [Download and install GNS3](https://www.gns3.com/)
 - [Download NX-OSv GNS3 appliance](https://www.gns3.com/marketplace/appliance/cisco-nx-osv)
