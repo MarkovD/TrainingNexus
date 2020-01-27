@@ -32,13 +32,168 @@ The previous image shows the topology of this LAB. It is also showed what are th
 
 Starting from this scenario, we will see in this LAB how to improve the configuration so that there are no possible loops. In particular, we will modify the configuration to implement a Dual-Sided vPC between the **N5Ks** and **N7Ks** switches to solve the issue of STP blocking the ports.
 
-If you are attending a live training session, you go can go directly to the next section, otherwise, if you need to build the virtual LAB from scratch, please check the "**Preparation Activities**" section of the [previous LAB](../LAB01/LAB01_instruction.md).
+If you are attending a live training session, you go can go directly to the next section, otherwise, if you need to build the virtual LAB from scratch, please check the "**Preparation Activities**" section of the [previous LAB](../LAB01/LAB01_instruction.md) and adapt it to build the topology of the previous image.
 
 ---
 
 ## Present Configuration Inspection
 
+Devices in this LAB have already been configured to support the scenario presented in the previous section. In this section you can find some more physical and logical configuration details.
 
+### Connectivity Scheme
+
+|Device 1|Port 1          |Port 2          |Device 2 |Link Role               |
+| :--:   |:--:            |:--:            |:--:     |:--                     |
+|N7K-1   |Ethernet1/7     |Ethernet1/7     |N7K-2    |vPC Peer Keepalive Link - vPC Domain100|
+|N7K-1   |Ethernet1/8     |Ethernet1/8     |N7K-2    |vPC Peer Link - vPC Domain100|
+|N7K-1   |Ethernet1/9     |Ethernet1/9     |N7K-2    |vPC Peer Link - vPC Domain100|
+|N5K-1   |Ethernet1/7     |Ethernet1/7     |N5K-2    |vPC Peer Keepalive Link - vPC Domain200|
+|N5K-1   |Ethernet1/8     |Ethernet1/8     |N5K-2    |vPC Peer Link - vPC Domain200|
+|N5K-1   |Ethernet1/9     |Ethernet1/9     |N5K-2    |vPC Peer Link - vPC Domain200|
+|N5K-1   |Ethernet1/1     |Ethernet1/1     |N7K-1    |Uplink - vPC11          |
+|N5K-1   |Ethernet1/2     |Ethernet1/1     |N7K-2    |Uplink - vPC11          |
+|N5K-1   |Ethernet1/3     |GigabitEth1/0   |HostA    |Downlink - vPC13        |
+|N5K-2   |Ethernet1/1     |Ethernet1/2     |N7K-1    |Uplink - vPC12          |
+|N5K-2   |Ethernet1/2     |Ethernet1/2     |N7K-2    |Uplink - vPC12          |
+|N5K-2   |Ethernet1/3     |GigabitEth2/0   |HostA    |Downlink - vPC13        |
+
+### Spanning-Tree (VLAN10) Analysis
+
+Let's check the STP operational states of ports assigned to VLAN10 on the four switches. We have to run the following command on all devices:
+
+```
+show spanning-tree vlan 10
+```
+
+<details>
+    <summary>N7K-1 Command Output</summary>
+    <pre>
+
+VLAN0010
+  Spanning tree enabled protocol rstp
+  Root ID    Priority    8202
+             Address     0023.04ee.be64
+             This bridge is the root
+             Hello Time  2  sec  Max Age 20 sec  Forward Delay 15 sec
+
+  Bridge ID  Priority    8202   (priority 8192 sys-id-ext 10)
+             Address     0023.04ee.be64
+             Hello Time  2  sec  Max Age 20 sec  Forward Delay 15 sec
+
+Interface        Role Sts Cost      Prio.Nbr Type
+---------------- ---- --- --------- -------- --------------------------------
+Po1              Root FWD 3         128.4096 (vPC peer-link) Network P2p 
+Po11             Desg FWD 1         128.4106 (vPC) P2p 
+Po12             Desg FWD 1         128.4107 (vPC) P2p 
+
+</pre>
+</details>
+
+<details>
+    <summary>N7K-2 Command Output</summary>
+    <pre>
+
+VLAN0010
+  Spanning tree enabled protocol rstp
+  Root ID    Priority    8202
+             Address     0023.04ee.be64
+             This bridge is the root
+             Hello Time  2  sec  Max Age 20 sec  Forward Delay 15 sec
+
+  Bridge ID  Priority    8202   (priority 8192 sys-id-ext 10)
+             Address     0023.04ee.be64
+             Hello Time  2  sec  Max Age 20 sec  Forward Delay 15 sec
+
+Interface        Role Sts Cost      Prio.Nbr Type
+---------------- ---- --- --------- -------- --------------------------------
+Po1              Desg FWD 3         128.4096 (vPC peer-link) Network P2p 
+Po11             Desg FWD 1         128.4106 (vPC) P2p 
+Po12             Desg FWD 1         128.4107 (vPC) P2p 
+
+</pre>
+</details>
+
+<details>
+    <summary>N5K-1 Command Output</summary>
+    <pre>
+
+VLAN0010
+  Spanning tree enabled protocol rstp
+  Root ID    Priority    8202
+             Address     0023.04ee.be64
+             Cost        6
+             Port        4096 (port-channel1)
+             Hello Time  2  sec  Max Age 20 sec  Forward Delay 15 sec
+
+  Bridge ID  Priority    32778  (priority 32768 sys-id-ext 10)
+             Address     0c7f.4dc9.e407
+             Hello Time  2  sec  Max Age 20 sec  Forward Delay 15 sec
+
+Interface        Role Sts Cost      Prio.Nbr Type
+---------------- ---- --- --------- -------- --------------------------------
+Po1              Root FWD 3         128.4096 (vPC peer-link) Network P2p 
+Po11             Altn BLK 3         128.4106 P2p 
+
+</pre>
+</details>
+
+<details>
+    <summary>N5K-2 Command Output</summary>
+    <pre>
+
+VLAN0010
+  Spanning tree enabled protocol rstp
+  Root ID    Priority    8202
+             Address     0023.04ee.be64
+             Cost        6
+             Port        4096 (port-channel1)
+             Hello Time  2  sec  Max Age 20 sec  Forward Delay 15 sec
+
+  Bridge ID  Priority    32778  (priority 32768 sys-id-ext 10)
+             Address     0c7f.4dc9.e407
+             Hello Time  2  sec  Max Age 20 sec  Forward Delay 15 sec
+
+Interface        Role Sts Cost      Prio.Nbr Type
+---------------- ---- --- --------- -------- --------------------------------
+Po1              Root FWD 3         128.4096 (vPC peer-link) Network P2p 
+Po11             Altn BLK 3         128.4106 P2p 
+
+</pre>
+</details>
+
+From the outputs above you can retrieve a couple of useful information on the VLAN10 status:
+
+- All the interfaces, port-channels or vPCs, are in **Forwarding** status (_FWD_) except the Po11 on the **N5K-1** switch, that is in **Blocking** status (_BLK_).
+
+- Both **N7K-1** and **N7K-2** claim to be the **Root Switch**.
+
+The fact outlined in the first bullet has already been justified: that interface has been blocked by STP to prevent a loop on VLAN10. But one could ask _"why that interface in particular was blocked to prevent the loop and not another?"_
+
+With this question in mind, we get to the second bullet. We know that the STP role and status of an interface mainly depends on the relative position of the Root Switch and the interface in the logical topology of the VLAN. So the first thing to do to understand the shape of the spanning tree, is to identify the Root Switch. But we have just found two Root Switches! How is it possible?
+
+Of course, they have both the same priority (_8202_), but under normal circumstances other parameters act like tie-breakers. In this case they appear as a single Spanning-Tree root (with same _bridge ID_) because of the command **_peer-switch_** under _vpc-domain-config_:
+
+```
+N7K-1# show running-config vpc
+
+[...]
+vpc domain 100
+  peer-switch
+  peer-keepalive destination 192.168.100.2 source 192.168.100.1 vrf keepalive-link
+[...]
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+N7K-2# show running-config vpc
+
+[...]
+vpc domain 100
+  peer-switch
+  peer-keepalive destination 192.168.100.1 source 192.168.100.2 vrf keepalive-link
+[...]
+```
+
+The 
 
 ## Dual-Sided vPC Configuration (N7K Side)
 
