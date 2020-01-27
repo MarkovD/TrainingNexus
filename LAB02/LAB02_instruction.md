@@ -1,4 +1,4 @@
-# LAB01 - Simple Virtual Port Channel
+# LAB02 - Dual-Sided Virtual Port Channel
 
 ## Table of Content
 - [Introduction](#Introduction)
@@ -20,11 +20,15 @@
 
 ## Introduction
 
-Virtual Port Channel (vPC) is a feature that enables the extension of a port channel across two different physical switches. The main advantage of this feature is the possibility to configure dual-homing for downstream devices to two upstream switches, without the need for a loop control mechanism such Spanning Tree Protocol.
+Often times, you find datacenter architectures that support multiple access Nexus switches (e.g. Nexus 5000 Series) to increase the resiliency of the network. Implementing vPC on the N5K switches toward access devices, you can take advantage of increased bandwidth and active-active multi-homing configuration without any operational drawback (on the access side).
 
-In this first virtual lab of the tutorial we will learn how to configure vPC in its simplest form (single-sided vPC) and to check all the status related parameters.
+If both access switches (aka _leaves_), in vPC configuration, are connected by means of a different vPC to two aggregation switch (the N7K switches, aka _spines_), probably you would need a protocol like STP to manage the loops on the VLANs running on this infrastructure.
 
-If you are attending a live training session, you can skip the [Preparation Activities](#Preparation-Activities) section and go directly to [this section](#Virtual-Port-Channel-Configuration-(N7K-Side)).
+This is a case in which an image worths more than thousand words:
+
+![LAB02_loop](images/LAB02_loop.png)
+
+The previous image shows the topology of this LAB. You can clearly see what the problem is: there is a loop on the VLAN 10 because it is propagated on all the links (as it should be!). This means that  
 
 ---
 
