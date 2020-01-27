@@ -727,7 +727,7 @@ N5K-1(config-if)#
 </pre>
 </details>
 
-Run again the command _show vpc brief_ on the **N7K-1** or on the **N7K-2**: now you should be able to see the vPC status as **_up_** :
+Run again the command _show vpc brief_ on the **N7K-1** or on the **N7K-2**: now you should be able to see the vPC status as **_up_**:
 
 ```
 show vpc brief
@@ -776,4 +776,9 @@ Id    Port          Status Consistency Reason                Active vlans
 :+1: Congratulations! You just completed this LAB!
 ---
 
-In this LAB we...
+In this LAB we learnt **how to**:
+
+- set up the required softwares to build up the virtual environment;
+- configure a single-sided Virtual Port Channel between two Nexus 7K and a Nexus 5K
+
+In the [next LAB](../LAB02/LAB02_instruction.md) we will see how to configure a dual-sided Virtual Port Channels, so as to take full advantage of the vPC feature.
