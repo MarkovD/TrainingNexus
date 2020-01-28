@@ -253,9 +253,11 @@ We talked a bit about the problem, we saw some configuration detail...but we sti
 Well, let's go back to a higher level view of the network. We have two vPC Domains, _100_ and _200_, and they have 4 links between them, 2 are part of the vPC11, or port-channel11 from **N5K-1** perspective, and the other 2 are part of the vPC12, or port-channel12 from **N5K-2** perspective.
 This means that vPC Domain 200 switches present themselves to the **N7K** switches as two completely different devices. At the same time, these **N5K** switches act like a single device toward the access hosts, because of their vPC configuration.
 
-Wouldn't it be better if they acted the same way both toward upstream and downstream devices?
+Wouldn't it be better if they acted the same way both toward upstream and downstream devices? To better understand this concept, let's see the folowing images:
 
+![LAB02_ASIS](images/LAB02_TopologyASIS.png)
 
+![LAB02_TOBE](images/LAB02_TopologyTOBE.png)
 
 
 
