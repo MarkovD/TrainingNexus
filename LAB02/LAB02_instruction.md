@@ -32,7 +32,7 @@ The previous image shows the topology of this LAB. It is also showed what are th
 
 Starting from this scenario, we will see in this LAB how to improve the configuration so that there are no possible loops. In particular, we will modify the configuration to implement a Dual-Sided vPC between the **N5Ks** and **N7Ks** switches to solve the issue of STP blocking the ports.
 
-If you are attending a live training session, you go can go directly to the next section, otherwise, if you need to build the virtual LAB from scratch, please check the "**Preparation Activities**" section of the [previous LAB](../LAB01/LAB01_instruction.md) and adapt it to build the topology of the previous image.
+If you are attending a live training session, you go can go directly to the next section, otherwise, if you need to build the virtual LAB from scratch, please check the "**Preparation Activities**" section of the [previous LAB](../LAB01/LAB01_instruction.md) and adapt it to build the topology represented in the previous image.
 
 ---
 
@@ -59,7 +59,7 @@ Devices in this LAB have already been configured to support the scenario present
 
 ### Spanning-Tree (VLAN10) Analysis
 
-Let's check the STP operational states of ports assigned to VLAN10 on the four switches. We have to run the following command on all devices:
+Let's check the STP operational status of ports assigned to VLAN10 on these four switches. Run the following command on all devices:
 
 ```
 show spanning-tree vlan 10
@@ -167,11 +167,11 @@ From the outputs above you can retrieve a couple of useful information on the VL
 
 - Both **N7K-1** and **N7K-2** claim to be the **Root Switch**.
 
-The fact outlined in the first bullet has already been justified: that interface has been blocked by STP to prevent a loop on VLAN10. But one could ask _"why that interface in particular was blocked to prevent the loop and not another?"_
+The fact outlined in the first bullet has already been justified: that interface has been blocked by STP to prevent a loop on VLAN10.
 
-With this question in mind, we get to the second bullet. We know that the STP role and status of an interface mainly depends on the relative position of the Root Switch and the interface in the logical topology of the VLAN. So the first thing to do to understand the shape of the spanning tree, is to identify the Root Switch. But we have just found two Root Switches! How is it possible?
+Then, we get to the second bullet. We know that the RSTP (the actual version of STP used) elects a single Root Bridge per layer2 topology, that is "per VLAN"...but we have just found two Root Switches! How is it possible?
 
-Of course, they have both the same priority (_8202_), but under normal circumstances other parameters act like tie-breakers. In this case they appear as a single Spanning-Tree root (with same _bridge ID_) because of the command **_peer-switch_** under _vpc-domain-config_:
+Of course, they have both the same priority (_8202 i.e. 8192 + 10_), but under normal circumstances other parameters act like tie-breakers. In this case they appear as a single Spanning-Tree root (with same _bridge ID_) because of the command **_peer-switch_** under _vpc-domain-config_:
 
 ```
 N7K-1# show running-config vpc
@@ -193,17 +193,70 @@ vpc domain 100
 [...]
 ```
 
-The 
+On a final note, you can consider **N7K-1** and **N7K-2** as if they were a single Root Bridge of the VLAN10 spanning-tree. Under the hood what happens is that the vPC primary switch controls the STP topology, that is to say that only it sends out BPDUs on STP designated ports.
+
+To check the vPC role of a switch in a vPC Domain, use the following command:
+
+```
+show vpc role
+```
+
+For example, in the vPC Domain 100, we have the **N7K-1** acting as _secondary_ and the **N7K-2** acting as _primary_
+
+<details>
+    <summary>N7K-1 Command Output</summary>
+    <pre>
+N7K-1# show vpc role 
+
+vPC Role status
+\----------------------------------------------------
+vPC role                        : secondary                     
+Dual Active Detection Status    : 0
+vPC system-mac                  : 00:23:04:ee:be:64             
+vPC system-priority             : 32667
+vPC local system-mac            : 0c:7f:4d:a8:51:07             
+vPC local role-priority         : 32667
+vPC local config role-priority  : 32667
+vPC peer system-mac             : 0c:7f:4d:05:36:07             
+vPC peer role-priority          : 32667
+vPC peer config role-priority   : 32667
+</pre>
+</details>
+
+<details>
+    <summary>N7K-2 Command Output</summary>
+    <pre>
+N7K-2# show vpc role
+
+vPC Role status
+\----------------------------------------------------
+vPC role                        : primary                       
+Dual Active Detection Status    : 0
+vPC system-mac                  : 00:23:04:ee:be:64             
+vPC system-priority             : 32667
+vPC local system-mac            : 0c:7f:4d:05:36:07             
+vPC local role-priority         : 32667
+vPC local config role-priority  : 32667
+vPC peer system-mac             : 0c:7f:4d:a8:51:07             
+vPC peer role-priority          : 32667
+vPC peer config role-priority   : 32667
+</pre>
+</details>
+
 
 ## Dual-Sided vPC Configuration (N7K Side)
 
-We need to perform 5 steps to configure a vPC
+### ...and so what?
 
-- [ ] Enable features
-- [ ] vPC Peer Keepalive Link preconfig
-- [ ] vPC Domain
-- [ ] vPC Peer Link
-- [ ] vPC creation
+We talked a bit about the problem, we saw some configuration detail...but we still didn't say anything about the solution.
+
+Well, let's go back to a higher level view of the network. We have two vPC Domains, _100_ and _200_, and they have 4 links between them, 2 are part of the vPC11, or port-channel11 from **N5K-1** perspective, and the other 2 are part of the vPC12, or port-channel12 from **N5K-2** perspective.
+This means that vPC Domain 200 switches present themselves to the **N7K** switches as two completely different devices. At the same time, these **N5K** switches act like a single device toward the access hosts, because of their vPC configuration.
+
+Wouldn't it be better if they acted the same way both toward upstream and downstream devices?
+
+
+
 
 
 ### **Enable features** 
