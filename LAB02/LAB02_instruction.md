@@ -244,24 +244,78 @@ vPC peer config role-priority   : 32667
 </details>
 
 
-## Dual-Sided vPC Configuration (N7K Side)
+## Dual-Sided vPC Configuration
 
 ### ...and so what?
 
 We talked a bit about the problem, we saw some configuration detail...but we still didn't say anything about the solution.
 
 Well, let's go back to a higher level view of the network. We have two vPC Domains, _100_ and _200_, and they have 4 links between them, 2 are part of the vPC11, or port-channel11 from **N5K-1** perspective, and the other 2 are part of the vPC12, or port-channel12 from **N5K-2** perspective.
-This means that vPC Domain 200 switches present themselves to the **N7K** switches as two completely different devices. At the same time, these **N5K** switches act like a single device toward the access hosts, because of their vPC configuration.
-
-Wouldn't it be better if they acted the same way both toward upstream and downstream devices? To better understand this concept, let's see the folowing images:
+This means that vPC Domain 200 switches present themselves to the **N7K** switches as two completely different devices. At the same time, these **N5K** switches act like a single device toward the access hosts, because of their vPC configuration. Next figure presents this concept: on the left side you can see the real architecture, while on the right there is a high level view of that configuration
 
 ![LAB02_ASIS](images/LAB02_TopologyASIS.png)
 
+One could ask: "_wouldn't it be better if the **N5K** switches acted the same way both toward upstream and downstream devices?_" To better understand this concept, let's consider the folowing images:
+
 ![LAB02_TOBE](images/LAB02_TopologyTOBE.png)
 
+As you can see, nothing changed in terms of number of devices or links between them. Just a configuration change on the way the vPCs between **N7Ks** and **N5Ks** allowed to eliminated the possible loops and in general simplified a lot the network "logical" topology. This configuration is called **Dual-Sided vPC**.
+
+To pass from the previous scenario to this one is possible performing the following steps:
+
+- [ ] Delete Port-Channels and vPCs configuration on the **N7Ks**
+- [ ] Create a new vPCs toward **N5Ks**
+- [ ] Delete Port-Channels configuration on the **N5Ks**
+- [ ] Create a new vPCs toward **N7Ks**
 
 
-### **Enable features** 
+### **Delete Port-Channels and vPCs configuration on the N7Ks** 
+
+> :heavy_check_mark: Well done! Step completed successfully!
+> ---
+> **_Progress Map_**
+>- [x] Delete Port-Channels and vPCs configuration on the **N7Ks**
+>- [ ] Create a new vPCs toward **N5Ks**
+>- [ ] Delete Port-Channels configuration on the **N5Ks**
+>- [ ] Create a new vPCs toward **N7Ks**
+>
+> ---
+
+### **Create a new vPCs toward N5Ks**
+
+> :heavy_check_mark: Well done! Step completed successfully!
+> ---
+> **_Progress Map_**
+>- [x] Delete Port-Channels and vPCs configuration on the **N7Ks**
+>- [x] Create a new vPCs toward **N5Ks**
+>- [ ] Delete Port-Channels configuration on the **N5Ks**
+>- [ ] Create a new vPCs toward **N7Ks**
+>
+> ---
+
+### **Delete Port-Channels configuration on the N5Ks** 
+
+> :heavy_check_mark: Well done! Step completed successfully!
+> ---
+> **_Progress Map_**
+>- [x] Delete Port-Channels and vPCs configuration on the **N7Ks**
+>- [x] Create a new vPCs toward **N5Ks**
+>- [x] Delete Port-Channels configuration on the **N5Ks**
+>- [ ] Create a new vPCs toward **N7Ks**
+>
+> ---
+
+### **Create a new vPCs toward N7Ks** 
+
+> :heavy_check_mark: Well done! Step completed successfully!
+> ---
+> **_Progress Map_**
+>- [x] Delete Port-Channels and vPCs configuration on the **N7Ks**
+>- [x] Create a new vPCs toward **N5Ks**
+>- [x] Delete Port-Channels configuration on the **N5Ks**
+>- [x] Create a new vPCs toward **N7Ks**
+>
+> ---
 
 The first thing to do when working with Nexus switches is to activate the required features. For this lab we need to enable two features: **LACP** and **VPC**.
 
