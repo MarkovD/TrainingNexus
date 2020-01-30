@@ -457,7 +457,30 @@ Group Port-       Type     Protocol  Member Ports
 
 ## Final Considerations
 
+Let's verify that this configuration has the expected effect on the Spanning Tree operational status. Recap: interfaces Eth1/1 and Eth1/2 (Po11) of **N5K-1** were in _BLK_ status because of STP. Let's see what is their status now:
 
+```
+N5K-1# show spanning-tree vlan 10
+
+VLAN0010
+  Spanning tree enabled protocol rstp
+  Root ID    Priority    8202
+             Address     0023.04ee.be64
+             Cost        4
+             Port        4096 (port-channel1)
+             Hello Time  2  sec  Max Age 20 sec  Forward Delay 15 sec
+
+  Bridge ID  Priority    32778  (priority 32768 sys-id-ext 10)
+             Address     0023.04ee.bec8
+             Hello Time  2  sec  Max Age 20 sec  Forward Delay 15 sec
+
+Interface        Role Sts Cost      Prio.Nbr Type
+---------------- ---- --- --------- -------- --------------------------------
+Po1              Root FWD 3         128.4096 (vPC peer-link) Network P2p 
+Po11             Root FWD 1         128.4106 (vPC) P2p 
+```
+
+The status is now _FWD_, coherently with the new logical topology that does not have loops anymore thanks to the Dual-Sided vPC configuration.
 
 ## Conclusions
 
@@ -466,7 +489,7 @@ Group Port-       Type     Protocol  Member Ports
 
 In this LAB we learnt **how to**:
 
-- set up the required softwares to build up the virtual environment;
-- configure a single-sided Virtual Port Channel between two Nexus 7K and a Nexus 5K
+- Analyze the STP configuration and operational status on the Nexus platform;
+- Change the configuration from Single-Sided to Dual-Sided vPC in order to optimize the network topology.
 
-In the [next LAB](../LAB02/LAB02_instruction.md) we will see how to configure a dual-sided Virtual Port Channels, so as to take full advantage of the vPC feature.
+In the [next LAB](../LAB03/LAB03_instruction.md) we will see a bigger topology and we will se some layer 3 configurations and their interaction with vPC.
