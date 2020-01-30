@@ -2,20 +2,16 @@
 
 ## Table of Content
 - [Introduction](#Introduction)
-- [Prerequisites](#Prerequisites)
-- [Preparation Activities](#Preparation-Activities)
-    * [GNS3 initial setup](#GNS3-initial-setup)
-    * [Nexus template setup](#Nexus-template-setup)
-    * [GNS3 project setup](#GNS3-project-setup)
-    * [Devices setup](#Devices-setup)
-- [Virtual Port Channel Configuration (N7K Side)](#Virtual-Port-Channel-Configuration-(N7K-Side))
-    * [Enable features](#Enable-features)
-    * [vPC Peer Keepalive Link preconfig](#vPC-Peer-Keepalive-Link-preconfig)
-    * [vPC Domain](#vPC-Domain)
-    * [vPC Peer Link](#vPC-Peer-Link)
-    * [vPC creation](#vPC-creation)
-- [Virtual Port Channel Configuration (N5K Side)](#Virtual-Port-Channel-Configuration-(N5K-Side))
+- [Present Configuration Inspection](#Present-Configuration-Inspection)
+    * [Connectivity Scheme](#Connectivity-Scheme)
+    * [Spanning-Tree (VLAN10) Analysis](#Spanning-Tree-(VLAN10)-Analysis)
+- [Dual-Sided vPC Configuration](#Dual-Sided-vPC-Configuration)
+    * [...and so what?](#...and-so-what?)
+    * [Remove interfaces from Po11 and add them to Po12 on both N7Ks](#Remove-interfaces-from-Po11-and-add-them-to-Po12-on-both-N7Ks)
+    * [Configure Po11 (N5K-1) and Po12 (N5K-2) as vPC12](#Configure-Po11-(N5K-1)-and-Po12-(N5K-2)-as-vPC12)
+- [Final Considerations](#Final-Considerations)
 - [Conclusions](#Conclusions)
+
 
 
 ## Introduction
@@ -171,7 +167,7 @@ The fact outlined in the first bullet has already been justified: that interface
 
 Then, we get to the second bullet. We know that the RSTP (the actual version of STP used) elects a single Root Bridge per layer2 topology, that is "per VLAN"...but we have just found two Root Switches! How is it possible?
 
-Of course, they have both the same priority (_8202 i.e. 8192 + 10_), but under normal circumstances other parameters act like tie-breakers. In this case they appear as a single Spanning-Tree root (with same _bridge ID_) because of the command **_peer-switch_** under _vpc-domain-config_:
+Of course, they have both the same priority (_8202 = 8192 + 10_), but under normal circumstances other parameters act like tie-breakers. In this case they appear to be a single Spanning-Tree root (with same _bridge ID_) because of the command **_peer-switch_** under _vpc-domain-config_:
 
 ```
 N7K-1# show running-config vpc
