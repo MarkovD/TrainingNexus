@@ -13,7 +13,6 @@
 - [Conclusions](#Conclusions)
 
 
-
 ## Introduction
 
 Often times, you find datacenter architectures that support multiple access Nexus switches (e.g. Nexus 5000 Series) to increase the resiliency of the network. Implementing vPC on the N5K switches toward access devices, you can take advantage of increased bandwidth and active-active multi-homing configuration without any operational drawback (on the access side).
@@ -476,7 +475,7 @@ Po1              Root FWD 3         128.4096 (vPC peer-link) Network P2p
 Po11             Root FWD 1         128.4106 (vPC) P2p 
 ```
 
-The status is now _FWD_, coherently with the new logical topology that does not have loops anymore thanks to the Dual-Sided vPC configuration.
+The status is now _FWD_, coherently with the new logical topology: there are no loops anymore thanks to the Dual-Sided vPC configuration.
 
 ## Conclusions
 
@@ -488,4 +487,4 @@ In this LAB we learnt **how to**:
 - Analyze the STP configuration and operational status on the Nexus platform;
 - Change the configuration from Single-Sided to Dual-Sided vPC in order to optimize the network topology.
 
-In the [next LAB](../LAB03/LAB03_instruction.md) we will see a bigger topology and we will se some layer 3 configurations and their interaction with vPC.
+In the [next LAB](../LAB03/LAB03_instruction.md) we will see a bigger topology with some layer 3 configurations.

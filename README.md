@@ -1,1 +1,1 @@
-# TrainingNexus
+# Maticmind Networking Academy - Training Nexus
